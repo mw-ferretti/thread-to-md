@@ -2,7 +2,7 @@
 
 **ThreadToMD - Chrome and Firefox browser extension**
 
-Last reviewed: **2026-11-19** (v0.2.4 preview)
+Last reviewed: **2026-11-19** (v0.2.4)
 
 ThreadToMD processes the open ChatGPT conversation **only when the user explicitly starts an export**. It generates a Markdown file or optional ZIP archive locally in the browser. This project is independent of OpenAI.
 
