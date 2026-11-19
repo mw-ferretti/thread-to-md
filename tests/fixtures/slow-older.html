@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Slow older-page fixture - ChatGPT</title></head>
+<body><main>
+<div data-app-action-timeline-scroll role="region" id="scrollbox" style="height:440px;overflow-y:auto;position:relative;width:770px;border:1px solid gray">
+  <div id="space"></div><div id="win" style="position:absolute;top:0;left:0;width:100%"></div>
+</div>
+</main><script>
+const TOTAL=80, HEIGHT=140, VISIBLE=7;
+const s=document.getElementById('scrollbox'), v=document.getElementById('win'), space=document.getElementById('space');
+let first=64, pending=false, topVisits=0, loads=0;
+function uuid(i,t){return '12345678-0000-4000-8000-'+String(i*10+t).padStart(12,'0');}
+function render(){
+ const base=first+Math.max(0,Math.min(TOTAL-first-VISIBLE,Math.floor(s.scrollTop/HEIGHT)-1));
+ space.style.height=((TOTAL-first)*HEIGHT)+'px';
+ v.style.top=((base-first)*HEIGHT)+'px';
+ v.innerHTML=Array.from({length:Math.min(VISIBLE,TOTAL-base)},(_,k)=>{
+  const i=base+k, a=uuid(i,1),b=uuid(i,2);
+  return `<div data-turn-key="${a}" style="height:${HEIGHT}px;border-bottom:1px solid #ccc;box-sizing:border-box">
+    <div data-content-search-unit-key="fallback-turn-${i-first}:0:user" data-chatgpt-search-message-ids="${a}">
+      <div data-user-message-bubble="true"><p>Slow user ${i}</p></div>
+    </div>
+    <div data-content-search-unit-key="fallback-turn-${i-first}:1:assistant" data-chatgpt-search-message-ids="${b}">
+      <div data-markdown-text-style="assistant-message"><p>Slow assistant ${i}</p></div>
+    </div>
+  </div>`;
+ }).join('');
+}
+function onScroll(){
+ if(s.scrollTop<2 && first>0 && !pending){
+   topVisits++;
+   if (topVisits >= 2){
+     topVisits=0; pending=true;
+     const spinner=document.createElement('div');
+     spinner.setAttribute('aria-busy','true');
+     spinner.style.position='absolute';spinner.style.bottom='0';spinner.id='load-spinner';
+     s.appendChild(spinner);
+     setTimeout(()=>{
+       const add=Math.min(16,first);
+       first-=add; loads++;
+       pending=false;
+       spinner.remove();
+       space.style.height=((TOTAL-first)*HEIGHT)+'px';
+       s.scrollTop+=add*HEIGHT;
+       render();
+     },4800);
+   }
+ }
+ render();
+}
+s.addEventListener('scroll',onScroll);
+render();s.scrollTop=100000;s.dispatchEvent(new Event('scroll'));
+window.__fixtureStatus=()=>({first,loads,topVisits,pending});
+</script></body></html>

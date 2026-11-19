@@ -1,0 +1,34 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build both browser packages
+        run: python3 scripts/build.py
+      - name: Static and permission tests
+        run: npm test
+      - name: Set up Chromium for synthetic end-to-end tests
+        run: |
+          python3 -m pip install playwright
+          python3 -m playwright install --with-deps chromium
+      - name: Run synthetic layout regressions
+        run: |
+          python3 tests/popup_browser.py
+          python3 tests/e2e.py
+          python3 tests/background_pause.py
+          python3 tests/archive_e2e.py
+          python3 tests/locales.py
+          python3 tests/slow-older-fast.py
+          python3 tests/timeout_partial.py
+          python3 tests/ascii.py
+          python3 tests/package_integrity.py

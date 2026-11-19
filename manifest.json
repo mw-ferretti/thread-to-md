@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extensionName__",
+  "short_name": "ThreadToMD",
+  "version": "0.2.4",
+  "description": "__MSG_extensionDescription__",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "action": {
+    "default_title": "__MSG_actionTitle__",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/16.png",
+      "32": "icons/32.png"
+    }
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "default_locale": "en",
+  "optional_host_permissions": [
+    "https://images.openai.com/*",
+    "https://*.oaiusercontent.com/*",
+    "https://cdn.oaistatic.com/*",
+    "https://d2ol7oe51mr4n9.cloudfront.net/*",
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*"
+  ],
+  "background": {
+    "service_worker": "background/worker.js",
+    "scripts": [
+      "background/assets.js",
+      "background/permission_popup.js"
+    ]
+  }
+}

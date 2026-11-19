@@ -1,0 +1,13 @@
+{
+  "name": "threadtomd",
+  "version": "0.2.4",
+  "private": true,
+  "description": "Local ChatGPT conversation to Markdown exporter",
+  "type": "module",
+  "scripts": {
+    "build": "python3 scripts/build.py",
+    "test": "node --test tests/*.test.mjs",
+    "test:e2e": "python3 tests/e2e.py"
+  },
+  "license": "MIT"
+}

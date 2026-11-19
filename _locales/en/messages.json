@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "ThreadToMD - ChatGPT to Markdown"
+  },
+  "extensionDescription": {
+    "message": "Export ChatGPT chats to Markdown or ZIP archives with accessible images and documents. Works with long, dynamically loaded threads."
+  },
+  "actionTitle": {
+    "message": "Export ChatGPT conversation"
+  }
+}

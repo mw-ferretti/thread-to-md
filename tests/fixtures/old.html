@@ -1,0 +1,22 @@
+<!doctype html><html lang="pt"><head><meta charset="UTF-8"><title>Teste completo - ChatGPT</title></head>
+<body><nav>IGNORAR SIDEBAR</nav><main style="height:600px">
+<div id="scrollbox" style="height:520px;overflow-y:auto;position:relative;width:800px;border:1px solid grey">
+  <div id="space" style="height:7040px"></div><div id="win" style="position:absolute;top:0;left:0;width:100%"></div>
+</div>
+</main><div id="result"></div><script>
+window.alert=(message)=>{document.getElementById('result').textContent=message};
+const TOTAL=44, HEIGHT=160, VISIBLE=7;
+function uuid(i,t){ return '12345678-0000-4000-8000-'+String(i*10+t).padStart(12,'0'); }
+
+const s=document.getElementById('scrollbox'),v=document.getElementById('win');
+function render(){
+  const base=Math.max(0,Math.min(TOTAL-VISIBLE,Math.floor(s.scrollTop/HEIGHT)-1));
+  v.style.top=base*HEIGHT+'px';
+  v.innerHTML=Array.from({length:Math.min(VISIBLE,TOTAL-base)},(_,off)=>{
+    const i=base+off;
+    return `<section data-testid="conversation-turn-${i}" data-turn="${i%2?'assistant':'user'}" style="height:${HEIGHT}px;box-sizing:border-box;border-bottom:1px solid #ccc"><div data-message-author-role="${i%2?'assistant':'user'}" data-message-id="${uuid(i,1)}">${i%2?`<div class="markdown"><p>Resposta numero ${i}</p></div>`:`<div data-testid="user-message"><p>Mensagem numero ${i}</p></div>`}</div></section>`;
+  }).join('');
+}
+s.addEventListener('scroll',render);render();s.scrollTop=100000;s.dispatchEvent(new Event('scroll'));
+
+</script></body></html>

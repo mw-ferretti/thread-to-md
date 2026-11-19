@@ -1,0 +1,74 @@
+name: Bug report
+description: Report a reproducible issue without sharing private conversation content.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Do not upload an unredacted chat, archive, screenshot, access token, signed URL, or private file. A synthetic reproduction is preferred.
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome / Chromium
+        - Firefox
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: browser_version
+    attributes:
+      label: Browser version
+      placeholder: "e.g. Firefox 160"
+    validations:
+      required: true
+  - type: input
+    id: extension_version
+    attributes:
+      label: ThreadToMD version
+      placeholder: "e.g. 0.2.3"
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Export format
+      options:
+        - Markdown (.md)
+        - Complete archive (.zip)
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce (sanitized)
+      description: Use synthetic text or describe the behavior without copying a private chat.
+      placeholder: |
+        1. Open a synthetic conversation...
+        2. Click Export...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and partial/completed status
+    validations:
+      required: true
+  - type: checkboxes
+    id: sanitization
+    attributes:
+      label: Privacy check
+      options:
+        - label: I have removed private conversation content, signed asset links and credentials from this report.
+          required: true

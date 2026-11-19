@@ -1,0 +1,35 @@
+<!doctype html><html lang="pt"><head><meta charset="UTF-8"><title>Teste completo - ChatGPT</title></head>
+<body><nav>IGNORAR SIDEBAR</nav><main style="height:600px">
+<div data-app-action-timeline-scroll role="region" id="scrollbox" style="height:520px;overflow-y:auto;position:relative;width:800px;border:1px solid grey">
+  <div id="space"></div><div id="win" style="position:absolute;top:0;left:0;width:100%"></div>
+</div><div role="presentation"><div data-turn-key="hidden"><div data-content-search-unit-key="f:0:user"><div data-user-message-bubble="true">TEXTO OCULTO</div></div></div></div>
+</main><div id="result"></div><script>
+window.alert=(message)=>{document.getElementById('result').textContent=message};
+const TOTAL=44, HEIGHT=160, VISIBLE=7;
+function uuid(i,t){ return '12345678-0000-4000-8000-'+String(i*10+t).padStart(12,'0'); }
+
+const s=document.getElementById('scrollbox'), v=document.getElementById('win'), space=document.getElementById('space');
+let first=TOTAL-11, pending=false;
+function render() {
+ let base=first + Math.max(0, Math.min(TOTAL-first-VISIBLE,Math.floor(s.scrollTop/HEIGHT)-1));
+ space.style.height=((TOTAL-first)*HEIGHT)+'px';
+ v.style.top=((base-first)*HEIGHT)+'px';
+ v.innerHTML=Array.from({length: Math.min(VISIBLE,TOTAL-base)},(_,off)=>{
+   const i=base+off;
+   const userId=uuid(i,1),aiId=uuid(i,2);
+   return `<div data-turn-key="${userId}" style="height:${HEIGHT}px;overflow:hidden;border-bottom:1px solid #ccc;box-sizing:border-box">
+     <div data-content-search-unit-key="fallback-turn-${i-first}:0:user" data-chatgpt-search-message-ids="${userId} ${userId}"><div data-user-message-bubble="true"><p>Mensagem numero ${i}</p></div></div>
+     <div data-content-search-unit-key="fallback-turn-${i-first}:1:assistant" data-chatgpt-search-message-ids="${aiId} ${aiId}"><h4 class="sr-only" data-conversation-role="assistant">Resposta</h4><div data-markdown-text-style="assistant-message"><p>Resposta numero <strong>${i}</strong></p></div></div>
+   </div>`;
+ }).join('');
+}
+function onScroll(){
+ if (s.scrollTop < 2 && first>0 && !pending){
+   pending=true;setTimeout(()=>{
+    const add=Math.min(5,first);first-=add;pending=false;s.scrollTop+=add*HEIGHT;render();
+   },750);
+ } else render();
+}
+s.addEventListener('scroll',onScroll);render();s.scrollTop=100000;s.dispatchEvent(new Event('scroll'));
+
+</script></body></html>

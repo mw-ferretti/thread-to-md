@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest a focused improvement to ThreadToMD.
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please describe the user problem before the proposed implementation. Do not include private conversation content or unredacted exports.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Include the browser, export mode, and how the user would interact with the feature.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Security and privacy
+      options:
+        - label: This request contains no confidential conversation text, signed URLs, or credentials.
+          required: true
