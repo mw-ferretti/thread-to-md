@@ -5,7 +5,7 @@
 <h1 align="center">ThreadToMD</h1>
 <p align="center"><strong>Export ChatGPT conversations to Markdown, with an optional portable archive for accessible images and files.</strong></p>
 <p align="center">
-  <img alt="Version 0.2.4" src="https://img.shields.io/badge/version-0.2.4-176c63">
+  <a href="https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4"><img alt="Release v0.2.4" src="https://img.shields.io/badge/release-v0.2.4-176c63"></a>
   <img alt="Tested release" src="https://img.shields.io/badge/status-tested-2ea44f">
   <img alt="Chrome and Firefox" src="https://img.shields.io/badge/browsers-Chrome%20%7C%20Firefox-364657">
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-18637b"></a>
@@ -16,7 +16,15 @@
 </p>
 
 <p align="center">
-  <a href="#quick-start">Quick start</a> | <a href="#features">Features</a> | <a href="#export-formats">Export formats</a> | <a href="#development">Development</a> | <a href="PRIVACY.md">Privacy</a>
+  <a href="https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4"><strong>Download v0.2.4</strong></a> | <a href="#quick-start">Quick start</a> | <a href="#features">Features</a> | <a href="#export-formats">Export formats</a> | <a href="#development">Development</a> | <a href="PRIVACY.md">Privacy</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4/threadtomd-chrome-0.2.4.zip"><strong>Chrome / Chromium ZIP</strong></a>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4/threadtomd-firefox-0.2.4.zip"><strong>Firefox ZIP</strong></a>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4">Release notes</a>
 </p>
 
 > [!IMPORTANT]
@@ -43,11 +51,11 @@ ChatGPT can keep only part of a long conversation in the page at a time. As you 
 
 ## Quick start
 
-**No build tools are required to use the packaged extension.** You can install a browser-specific ZIP attached to a GitHub Release, once a release is published. If no release asset is available yet, [build from source](#development).
+**No build tools are required to use the packaged extension.** Download the browser-specific ZIP from the [v0.2.4 release](https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4), or [build from source](#development).
 
 ### Chrome / Chromium
 
-1. Download `threadtomd-chrome-0.2.4.zip` from **Releases** (or create it with `python3 scripts/build.py`).
+1. Download [`threadtomd-chrome-0.2.4.zip`](https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4/threadtomd-chrome-0.2.4.zip) from the v0.2.4 release (or create it with `python3 scripts/build.py`).
 2. **Extract** the ZIP to a folder.
 3. Open `chrome://extensions/` and enable **Developer mode**.
 4. Select **Load unpacked** and choose the extracted **folder containing `manifest.json`**.
@@ -55,7 +63,7 @@ ChatGPT can keep only part of a long conversation in the page at a time. As you 
 
 ### Firefox
 
-1. Download `threadtomd-firefox-0.2.4.zip` from **Releases** (or create it with `python3 scripts/build.py`).
+1. Download [`threadtomd-firefox-0.2.4.zip`](https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4/threadtomd-firefox-0.2.4.zip) from the v0.2.4 release (or create it with `python3 scripts/build.py`).
 2. **Extract** the ZIP to a folder.
 3. Open `about:debugging#/runtime/this-firefox`.
 4. Select **Load Temporary Add-on...** and choose the extracted **`manifest.json` file**.
