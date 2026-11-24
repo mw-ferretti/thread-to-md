@@ -16,7 +16,9 @@ for browser in ('chrome', 'firefox'):
         assert {'manifest.json', 'src/exporter.js', 'src/i18n.js', 'src/archive.js', 'background/assets.js', 'background/worker.js', 'background/permission_popup.js', 'popup/popup.js', 'popup/popup.html', '_locales/en/messages.json', '_locales/pt_BR/messages.json'} <= names
         pkg = json.loads(z.read('manifest.json'))
         assert pkg['version'] == version
-        assert pkg['permissions'] == ['activeTab', 'scripting', 'storage']
+        assert pkg['permissions'] == (['activeTab','scripting','storage','debugger'] if browser == 'chrome' else ['activeTab','scripting','storage'])
+        assert ('background/native_wheel.js' in names) == (browser == 'chrome')
+        assert 'debugger' not in pkg['permissions'] if browser == 'firefox' else True
         assert 'https://images.openai.com/*' in pkg['optional_host_permissions']
         assert pkg['background']['service_worker'] == 'background/worker.js'
         assert pkg['background']['scripts'] == ['background/assets.js','background/permission_popup.js']
@@ -25,8 +27,11 @@ for browser in ('chrome', 'firefox'):
         assert ('browser_specific_settings' in pkg) == (browser == 'firefox')
         assert z.read('popup/popup.js') == (ROOT / 'popup/popup.js').read_bytes()
         assert f"v{version} &middot;" not in z.read('popup/popup.html').decode('utf-8')  # version uses a Unicode middle dot
-        assert f'v{version} · ' in z.read('popup/popup.html').decode('utf-8')
-        assert '<script src="../src/i18n.js"></script>' in z.read('popup/popup.html').decode('utf-8')
+        popup_html = z.read('popup/popup.html').decode('utf-8')
+        assert f'v{version} · ' in popup_html
+        assert 'value="automatic"' not in popup_html
+        assert 'value="native"' in popup_html and 'value="assisted"' in popup_html
+        assert '<script src="../src/i18n.js"></script>' in popup_html
         assert z.read('src/i18n.js') == (ROOT / 'src/i18n.js').read_bytes()
         assert z.read('src/exporter.js') == (ROOT / 'src/exporter.js').read_bytes()
         assert z.read('src/archive.js') == (ROOT / 'src/archive.js').read_bytes()
@@ -36,4 +41,7 @@ for browser in ('chrome', 'firefox'):
         popup = z.read('popup/popup.js').decode('utf-8')
         assert "files: ['/src/i18n.js', '/src/archive.js', '/src/exporter.js']" in popup
         assert 'window.close();' in popup
-    print(f'PASS {browser}: archive OK, version {version}, i18n, path and popup close verified')
+        assert "const currentMethod = () => firefoxPopup ? 'assisted'" in popup
+        assert f'ThreadToMD {version} (engine' in z.read('src/exporter.js').decode('utf-8')
+        assert f"version: '{version}'" in z.read('src/archive.js').decode('utf-8')
+    print(f'PASS {browser}: archive OK, version {version}, mode selection, i18n and permissions verified')

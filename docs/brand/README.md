@@ -1,8 +1,15 @@
-# ThreadToMD visual assets
+# ThreadToMD visual assets - v0.2.4.16
 
-- `social-preview.png` - 1280 x 640 original banner for GitHub repository social preview and documentation.
-- `chrome-store-promo-440x280.png` - original 440 x 280 promotional-art draft for a future Chrome Web Store listing.
+- `social-preview.png` - 1280 x 640 GitHub README banner / repository social-preview image. Includes the *actual compact popup* rendered in a synthetic Chrome test context, plus the browser-specific capture description.
+- `chrome-store-promo-440x280.png` - 440 x 280 promotional-art draft refreshed to match the new UI and Chrome automatic / Firefox manual split. **Not an approved store asset**.
 
-These assets are **brand artwork**, not screenshots proving that a browser-store submission was approved. The embedded popup in the social preview is based on a locally rendered UI fixture using synthetic tab information.
+The brand icon under `icons/` has **not** changed. The current banners use it without altering the shipped extension icon. The banner/promo script composites the real locally rendered popup, not a generated mock interface.
 
-For screenshots, see `../screenshots/`. Before submitting to a store, capture the installed extension in a real browser and use non-sensitive content. Follow current store policy and avoid compositing fake conversations as if they were real live-site screenshots.
+Regeneration:
+
+```bash
+python3 scripts/update_popup_screenshots.py
+python3 scripts/update_brand_assets.py
+```
+
+The scripts require Python Playwright + Chromium and Pillow; they do not access personal conversations. The popup is rendered against synthetic tab metadata. Before submitting to a browser store, capture a real installed extension with non-sensitive content and follow the store's current asset rules. To update GitHub's social card, commit the file **and set it in repository Settings**; the README image alone does not update GitHub's social preview setting.

@@ -26,19 +26,29 @@ function setupPopup({
     markdown: { checked: true, addEventListener(type, callback) { this[type] = callback; } },
     archive: { checked: false, addEventListener(type, callback) { this[type] = callback; } }
   };
-  const start = { disabled: true, addEventListener(type, callback) {
+  const methods = {
+    assisted: {checked: false, addEventListener(type, callback) { this[type] = callback; }},
+    native: {checked: false, addEventListener(type, callback) { this[type] = callback; }}
+  };
+  const start = { disabled: true, textContent: '', addEventListener(type, callback) {
     assert.equal(type, 'click');
     startHandler = callback;
   }};
   const status = { textContent: '', className: '' };
+  const nativeWarning = { hidden: true };
+  const nativeChoice = { hidden: false };
+  const capturePicker = { hidden: false };
   const translated = [{ textContent: '', getAttribute: () => 'popupExport' }];
   const document = {
     documentElement: { lang: 'en' },
-    getElementById: id => ({ start, status })[id],
+    getElementById: id => ({ start, status, 'native-warning': nativeWarning, 'native-choice': nativeChoice })[id],
     querySelectorAll: () => translated,
     querySelector: selector => {
+      if (selector === '.capture-picker') return capturePicker;
       if (selector.endsWith('[value="markdown"]')) return modes.markdown;
       if (selector.endsWith('[value="archive"]')) return modes.archive;
+      if (selector.endsWith('[value="assisted"]')) return methods.assisted;
+      if (selector.endsWith('[value="native"]')) return methods.native;
       throw new Error(`Unexpected selector: ${selector}`);
     }
   };
@@ -84,9 +94,16 @@ function setupPopup({
   runInContext(localeCode, context, { filename: 'src/i18n.js' });
   runInContext(popupCode, context, { filename: 'popup/popup.js' });
   return {
-    start, status, calls, permissionCalls, backgroundMessages, uiPorts, document, translated, modes, storage,
+    start, status, nativeWarning, nativeChoice, capturePicker, calls, permissionCalls, backgroundMessages, uiPorts, document, translated, modes, methods, storage,
     get closed() { return closed; },
     get chosenMode() { return modes.archive.checked ? 'archive' : 'markdown'; },
+    get chosenMethod() { return methods.native.checked ? 'native' : 'assisted'; },
+    chooseMethod(method) {
+      assert.ok(['assisted','native'].includes(method), 'Classic method was removed from popup');
+      methods.assisted.checked = method === 'assisted';
+      methods.native.checked = method === 'native';
+      methods[method].click?.();
+    },
     choose(mode) {
       modes.markdown.checked = mode === 'markdown';
       modes.archive.checked = mode === 'archive';
@@ -105,6 +122,8 @@ test('Chrome: choosing ZIP requests permission immediately; Start injects withou
   await flush();
   assert.equal(h.start.disabled, false);
   assert.equal(h.permissionCalls.length, 0);
+  assert.equal(h.chosenMethod, 'native', 'Chrome should default to native wheel');
+  assert.equal(h.nativeWarning.hidden, false, 'Sensitive permission warning must be visible');
   h.choose('archive');
   assert.equal(h.permissionCalls.length, 1, 'permission request must run during option click');
   assert.deepEqual(h.backgroundMessages.map(m => m.type), ['threadtomd-register-archive-consent']);
@@ -117,7 +136,7 @@ test('Chrome: choosing ZIP requests permission immediately; Start injects withou
   await flush();
   assert.equal(h.calls.length, 2);
   assert.equal(h.calls[0].target.tabId, 41);
-  assert.deepEqual(Array.from(h.calls[0].args), ['archive']);
+  assert.deepEqual(Array.from(h.calls[0].args), ['archive', 'native']);
   assert.deepEqual(Array.from(h.calls[1].files), ['/src/i18n.js', '/src/archive.js', '/src/exporter.js']);
   h.succeed();
   await click;
@@ -146,7 +165,7 @@ test('Chrome: declined permission still allows ZIP containing Markdown and avail
   assert.match(h.status.textContent, /Media access not granted/);
   const click = h.click();
   await flush();
-  assert.deepEqual(Array.from(h.calls[0].args), ['archive']);
+  assert.deepEqual(Array.from(h.calls[0].args), ['archive', 'native']);
   h.succeed();
   await click;
   assert.equal(h.closed, 1);
@@ -170,7 +189,7 @@ test('Firefox: selecting ZIP starts prompt, closes overlay, and restores mode on
   assert.match(second.status.textContent, /ZIP access ready/);
   const click = second.click();
   await flush();
-  assert.deepEqual(Array.from(second.calls[0].args), ['archive']);
+  assert.deepEqual(Array.from(second.calls[0].args), ['archive', 'assisted']);
   second.succeed();
   await click;
   assert.equal(second.closed, 1);
@@ -190,7 +209,7 @@ test('Firefox: declining ZIP access preserves format, and Markdown remains avail
   assert.equal(reopened.permissionCalls.length, 0);
   const click = reopened.click();
   await flush();
-  assert.deepEqual(Array.from(reopened.calls[0].args), ['markdown']);
+  assert.deepEqual(Array.from(reopened.calls[0].args), ['markdown', 'assisted']);
   reopened.succeed();
   await click;
 });
@@ -219,7 +238,7 @@ test('Popup keeps localized error and re-enables button after injection failure'
   const h = setupPopup({ uiLanguage: 'pt-BR' });
   await flush();
   assert.equal(h.document.documentElement.lang, 'pt-BR');
-  assert.equal(h.translated[0].textContent, 'Exportar conversa atual');
+  assert.equal(h.translated[0].textContent, 'Exportar conversa');
   assert.match(h.status.textContent, /Pronto/);
   const click = h.click();
   await flush();
@@ -235,7 +254,7 @@ test('Unsupported UI locale defaults to English, even pt-PT', async () => {
   const h = setupPopup({ uiLanguage: 'pt-PT' });
   await flush();
   assert.equal(h.document.documentElement.lang, 'en');
-  assert.equal(h.translated[0].textContent, 'Export current conversation');
+  assert.equal(h.translated[0].textContent, 'Export conversation');
   assert.equal(h.status.textContent, 'Ready. No conversation content is sent to ThreadToMD.');
 });
 
@@ -269,4 +288,118 @@ test('Chrome/Firefox: remembered Markdown selection is respected on reopening', 
   const again = setupPopup({ storage, hasAccess: true });
   await flush();
   assert.equal(again.chosenMode, 'markdown');
+});
+
+
+test('Chrome: popup offers only native automatic and manual, and persists manual', async () => {
+  const storage = new Map();
+  const first = setupPopup({ storage });
+  await flush();
+  assert.equal(first.chosenMethod, 'native');
+  first.chooseMethod('assisted');
+  assert.equal(storage.get('threadtomd.captureMethod'), 'assisted');
+  assert.equal(first.start.textContent, 'Start assisted capture');
+  const click = first.click();
+  await flush();
+  assert.deepEqual(Array.from(first.calls[0].args), ['markdown', 'assisted']);
+  first.succeed(); await click;
+  const next = setupPopup({ storage });
+  await flush();
+  assert.equal(next.chosenMethod, 'assisted');
+  assert.equal(next.capturePicker.hidden, false);
+  assert.equal(next.methods.automatic, undefined);
+});
+
+test('Assisted ZIP in Firefox retains optional permission flow and method selection', async () => {
+  const storage = new Map();
+  const first = setupPopup({ storage, firefox: true, deferredPermission: true });
+  await flush();
+  first.chooseMethod('assisted');
+  first.choose('archive');
+  assert.equal(first.closed, 1);
+  const reopened = setupPopup({ storage, firefox: true, hasAccess: true });
+  await flush();
+  assert.equal(reopened.chosenMethod, 'assisted');
+  assert.equal(reopened.chosenMode, 'archive');
+  const click = reopened.click();
+  await flush();
+  assert.deepEqual(Array.from(reopened.calls[0].args), ['archive', 'assisted']);
+  reopened.succeed();
+  await click;
+});
+
+test('Chrome native capture is explicit and localized, and persists method preference', async () => {
+  const storage = new Map();
+  const h = setupPopup({ storage });
+  await flush();
+  h.chooseMethod('native');
+  assert.equal(h.nativeWarning.hidden, false);
+  assert.equal(h.nativeChoice.hidden, false);
+  assert.equal(storage.get('threadtomd.captureMethod'), 'native');
+  const pending = h.click();
+  await flush();
+  assert.deepEqual(Array.from(h.calls[0].args), ['markdown', 'native']);
+  h.succeed(); await pending;
+  const again = setupPopup({ storage });
+  await flush();
+  assert.equal(again.chosenMethod, 'native');
+});
+
+test('Firefox never presents native capture even if preference is native', async () => {
+  const storage = new Map([['threadtomd.captureMethod', 'native']]);
+  const h = setupPopup({ storage, firefox: true });
+  await flush();
+  assert.equal(h.nativeChoice.hidden, true);
+  assert.equal(h.nativeWarning.hidden, true);
+  assert.equal(h.chosenMethod, 'assisted');
+  assert.equal(h.capturePicker.hidden, true);
+});
+
+
+test('Chrome: historical automatic preference migrates to native wheel without selecting legacy', async () => {
+  const storage = new Map([['threadtomd.captureMethod', 'automatic']]);
+  const h = setupPopup({ storage });
+  await flush();
+  assert.equal(h.chosenMethod, 'native');
+  assert.equal(h.nativeWarning.hidden, false);
+  const click = h.click(); await flush();
+  assert.deepEqual(Array.from(h.calls[0].args), ['markdown', 'native']);
+  h.succeed(); await click;
+});
+
+test('Chrome: old explicit legacy preference migrates to native', async () => {
+  for (const old of ['automatic','legacy','native']) {
+    const storage = new Map([['threadtomd.captureMethod', old]]);
+    const h = setupPopup({ storage });
+    await flush();
+    assert.equal(h.chosenMethod, 'native');
+    assert.equal(h.nativeWarning.hidden, false);
+    const click = h.click(); await flush();
+    assert.deepEqual(Array.from(h.calls[0].args), ['markdown', 'native']);
+    h.succeed(); await click;
+  }
+});
+
+test('Firefox: manual is the only mode, including stale native/legacy preferences', async () => {
+  for (const stored of [null, 'automatic', 'native', 'legacy', 'assisted']) {
+    const storage = new Map(stored ? [['threadtomd.captureMethod', stored]] : []);
+    const h = setupPopup({ firefox: true, storage });
+    await flush();
+    assert.equal(h.chosenMethod, 'assisted');
+    assert.equal(h.nativeChoice.hidden, true);
+    assert.equal(h.capturePicker.hidden, true);
+    assert.equal(h.nativeWarning.hidden, true);
+    assert.equal(h.start.textContent, 'Start assisted capture');
+    const click = h.click(); await flush();
+    assert.deepEqual(Array.from(h.calls[0].args), ['markdown', 'assisted']);
+    h.succeed(); await click;
+  }
+});
+
+// The old UI choice must not be exposed in a new build.
+test('Classic automatic option is absent from popup HTML', () => {
+  const html = readFileSync(new URL('../popup/popup.html', import.meta.url), 'utf8');
+  assert.ok(!html.includes('value="automatic"'));
+  assert.ok(html.includes('value="native"'));
+  assert.ok(html.includes('value="assisted"'));
 });

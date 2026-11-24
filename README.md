@@ -5,8 +5,8 @@
 <h1 align="center">ThreadToMD</h1>
 <p align="center"><strong>Export ChatGPT conversations to Markdown, with an optional portable archive for accessible images and files.</strong></p>
 <p align="center">
-  <a href="https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4"><img alt="Release v0.2.4" src="https://img.shields.io/badge/release-v0.2.4-176c63"></a>
-  <img alt="Tested release" src="https://img.shields.io/badge/status-tested-2ea44f">
+  <a href="https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4.16"><img alt="Release v0.2.4.16" src="https://img.shields.io/badge/release-v0.2.4.16-176c63"></a>
+  <img alt="Chrome automatic and Firefox manual" src="https://img.shields.io/badge/capture-Chrome%20auto%20%7C%20Firefox%20manual-2d746c">
   <img alt="Chrome and Firefox" src="https://img.shields.io/badge/browsers-Chrome%20%7C%20Firefox-364657">
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-18637b"></a>
 </p>
@@ -16,19 +16,19 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4"><strong>Download v0.2.4</strong></a> | <a href="#quick-start">Quick start</a> | <a href="#features">Features</a> | <a href="#export-formats">Export formats</a> | <a href="#development">Development</a> | <a href="PRIVACY.md">Privacy</a>
+  <a href="https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4.16"><strong>Download v0.2.4.16</strong></a> | <a href="#quick-start">Quick start</a> | <a href="#features">Features</a> | <a href="#export-formats">Export formats</a> | <a href="#development">Development</a> | <a href="PRIVACY.md">Privacy</a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4/threadtomd-chrome-0.2.4.zip"><strong>Chrome / Chromium ZIP</strong></a>
+  <a href="https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4.16/threadtomd-chrome-0.2.4.16.zip"><strong>Chrome / Chromium ZIP</strong></a>
   &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4/threadtomd-firefox-0.2.4.zip"><strong>Firefox ZIP</strong></a>
+  <a href="https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4.16/threadtomd-firefox-0.2.4.16.zip"><strong>Firefox ZIP</strong></a>
   &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4">Release notes</a>
+  <a href="https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4.16">Release notes</a>
 </p>
 
 > [!IMPORTANT]
-> **v0.2.4 has completed manual release acceptance on Google Chrome 158.0.8127.36 and Mozilla Firefox 160.0.** Automated unit, package-integrity and synthetic browser tests also cover the core export paths. A completed scan still uses a **heuristic**, not an authoritative count from ChatGPT, so users should verify the first and last messages of important exports. This is an independent open-source project, not affiliated with or endorsed by OpenAI.
+> **Release v0.2.4.16:** The Chrome native-automatic engine was successfully exercised in a real long ChatGPT conversation in v0.2.4.15: a confirmed scrolling-widget loop was bypassed and the user reported a full export. v0.2.4.16 changes only the popup layout/text and version metadata; its popup, packages and unit tests passed synthetic checks. **The exact v0.2.4.16 build and its Firefox manual-only path still need a fresh live-browser smoke test.** ChatGPT exposes no authoritative message total; verify the first and last messages. This is an independent project, not endorsed by OpenAI.
 
 ## Why ThreadToMD?
 
@@ -40,22 +40,22 @@ ChatGPT can keep only part of a long conversation in the page at a time. As you 
 
 | Capability | What you get |
 | --- | --- |
-| Long-chat capture | Scrolls through virtualized conversations and retains messages after their elements leave the DOM |
+| Long-chat capture | Chrome uses browser-trusted native wheel input; Firefox captures as you scroll manually, preserving messages after DOM virtualization removes them |
 | Developer-friendly Markdown | Preserves headings, tables, links, code fences and whitespace-sensitive ASCII diagrams |
 | Two export formats | A standalone `.md` or `.zip` with the Markdown and accessible local media/attachments |
 | Offline references | Successful archived assets use relative links under `assets/` |
 | Honest failure reporting | Missing files remain external or are marked unavailable; the ZIP includes `manifest.json` |
-| Progress and recovery | On-page progress, stop-and-save-partial, and pause/resume when the tab loses visibility or focus |
+| Progress and recovery | On-page progress and partial-export fallback; Chrome can bypass up to three previously captured nested code widgets when a confirmed loop blocks the upward scan |
 | Local-first | No developer-operated server, telemetry, account-wide API or persistent conversation storage |
-| Cross-browser | Shared source for Chrome/Chromium and Firefox; English UI with Brazilian Portuguese support |
+| Cross-browser | One source tree, browser-specific capture modes and permissions; English UI with Brazilian Portuguese support |
 
 ## Quick start
 
-**No build tools are required to use the packaged extension.** Download the browser-specific ZIP from the [v0.2.4 release](https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4), or [build from source](#development).
+**No build tools are required to use the packaged extension.** Download the browser-specific ZIP from the [v0.2.4.16 release](https://github.com/mw-ferretti/thread-to-md/releases/tag/v0.2.4.16), or [build from source](#development).
 
 ### Chrome / Chromium
 
-1. Download [`threadtomd-chrome-0.2.4.zip`](https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4/threadtomd-chrome-0.2.4.zip) from the v0.2.4 release (or create it with `python3 scripts/build.py`).
+1. Download [`threadtomd-chrome-0.2.4.16.zip`](https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4.16/threadtomd-chrome-0.2.4.16.zip) from the v0.2.4.16 release (or create it with `python3 scripts/build.py`).
 2. **Extract** the ZIP to a folder.
 3. Open `chrome://extensions/` and enable **Developer mode**.
 4. Select **Load unpacked** and choose the extracted **folder containing `manifest.json`**.
@@ -63,7 +63,7 @@ ChatGPT can keep only part of a long conversation in the page at a time. As you 
 
 ### Firefox
 
-1. Download [`threadtomd-firefox-0.2.4.zip`](https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4/threadtomd-firefox-0.2.4.zip) from the v0.2.4 release (or create it with `python3 scripts/build.py`).
+1. Download [`threadtomd-firefox-0.2.4.16.zip`](https://github.com/mw-ferretti/thread-to-md/releases/download/v0.2.4.16/threadtomd-firefox-0.2.4.16.zip) from the v0.2.4.16 release (or create it with `python3 scripts/build.py`).
 2. **Extract** the ZIP to a folder.
 3. Open `about:debugging#/runtime/this-firefox`.
 4. Select **Load Temporary Add-on...** and choose the extracted **`manifest.json` file**.
@@ -73,19 +73,22 @@ Firefox temporary add-ons are removed when the browser is fully restarted. This 
 
 ### Export in five steps
 
-1. Open the **conversation itself** on `chatgpt.com` (not the home page).
-2. Click the extension icon and choose **Markdown only (.md)** or **Complete archive (.zip)**.
-   **On the first selection of ZIP**, the browser asks for optional access to supported attachment hosts, **before** you start the export. On Firefox 149+ the toolbar popup closes to expose the native permission prompt and, **after you allow access, reopens automatically**. On Chrome the popup normally stays open. ZIP remains selected either way. If popup restoration is blocked by the browser or you decline access, open it manually; no export starts until you press Export. **For a first-use test after upgrading, revoke the previously granted optional host access or use a fresh browser profile.**
-3. Click **Export current conversation**. No permission dialog is triggered by this button. The popup closes and an on-page progress panel appears.
-4. Leave the conversation tab open. Avoid manual scrolling; if you switch tabs or applications, the scan **pauses** and resumes when you return.
-5. When the download finishes, compare the **first and last messages** with the original conversation. For ZIP archives, extract the full folder before opening `conversation.md`.
+1. Open a specific conversation on `chatgpt.com`, then click the ThreadToMD toolbar icon.
+2. Choose **Markdown only (.md)** or **Complete archive (.zip)**. The first ZIP selection asks for optional access to supported original asset hosts. On Firefox the popup may close to show the browser prompt, then attempt to reopen with ZIP still selected; reopen it yourself if the browser does not allow this. Permission approval never starts export by itself.
+3. **Chrome:** choose **Automatic (Chrome)** (the default) or **Assisted (manual)**. The automatic mode uses Chrome's sensitive `debugger` permission only while working with the selected ChatGPT tab. **Firefox:** manual capture is the only mode; there is no Chrome debugger permission.
+4. Click **Export conversation** (Chrome automatic) or **Start assisted capture** (manual). For Chrome automatic, keep the tab open, let ThreadToMD navigate it, and avoid opening that tab's DevTools. For manual mode, **scroll to the first message and then back to the last**, and click **Finish** in the on-page panel. If you switch away during automatic export, return to the tab to let it resume.
+5. Open the saved file, confirm the **first and last messages**, and check any partial-status warnings. Extract the ZIP before opening `conversation.md`; check `manifest.json` for unavailable assets.
 
 <p align="center">
-  <a href="docs/screenshots/popup.png"><img src="docs/screenshots/popup.png" alt="ThreadToMD export options, captured from a local UI fixture" width="300"></a>
+  <a href="docs/screenshots/popup.png"><img src="docs/screenshots/popup.png" alt="Compact Chrome popup with Markdown/ZIP and automatic/manual modes in v0.2.4.16" width="300"></a>
   &nbsp;&nbsp;
-  <a href="docs/screenshots/progress-demo.png"><img src="docs/screenshots/progress-demo.png" alt="On-page export progress shown with a synthetic conversation" width="540"></a>
+  <a href="docs/screenshots/popup-firefox.png"><img src="docs/screenshots/popup-firefox.png" alt="Firefox compact popup with manual-only capture" width="300"></a>
 </p>
-<p align="center"><sub>Demonstrations use synthetic data. Neither screenshot contains a private conversation.</sub></p>
+<p align="center"><sub>Actual extension popup HTML/CSS, rendered in Chromium with synthetic tab data. <a href="docs/screenshots/popup-pt-BR.png">Portuguese Chrome popup</a> · <a href="docs/screenshots/popup-firefox-pt-BR.png">Portuguese Firefox popup</a></sub></p>
+<p align="center">
+  <a href="docs/screenshots/progress-demo.png"><img src="docs/screenshots/progress-demo.png" alt="Synthetic conversation illustrating the on-page progress panel" width="670"></a>
+</p>
+<p align="center"><sub>Synthetic demonstration, not a screenshot of private chats or proof of complete live-site exports.</sub></p>
 
 ## Export formats
 
@@ -135,6 +138,7 @@ The extension runs on the **active ChatGPT conversation only after you click**. 
 | `activeTab` | Temporary access to the selected conversation after the toolbar action |
 | `scripting` | Run the bundled exporter in that tab |
 | `storage` | Retain a short-lived popup-restoration intent in session memory while native permission UI is open |
+| Chrome-only `debugger` | Send browser-trusted wheel events to the selected ChatGPT tab during automatic capture; detached on termination/navigation and **not included in Firefox** |
 | Optional, narrowly scoped host access | Only for ZIP mode, to retrieve supported OpenAI/CDN media with your consent |
 
 The preferred export format is stored locally in the extension, and a short-lived consent-restoration marker (tab/window IDs and timestamp only) is held in `storage.session` memory. There is **no telemetry, analytics, developer-owned backend or persistent conversation/export storage**. The extension does not request the cookies, browsing-history or all-sites permissions. A ZIP can contain private conversation text, local files and sensitive original URLs: **review it before sharing or committing it to GitHub**.
@@ -143,8 +147,10 @@ Read the [privacy policy](PRIVACY.md) and [security policy](SECURITY.md).
 
 ## Known limitations
 
-- **Message completeness is heuristic.** ChatGPT does not expose an authoritative total through the rendered page; check the export boundaries yourself. A stalled scan is marked partial instead of silently claiming success.
-- **Background work is paused deliberately.** Return to the conversation to finish. Closing, reloading or browser-discarding the tab loses the in-memory run.
+- **Message completeness is heuristic.** ChatGPT does not expose an authoritative total through the rendered page; check the export boundaries yourself. A stalled scan can switch to an explicitly partial manual fallback.
+- **Chrome automatic uses the sensitive `debugger` permission.** It is scoped by the extension to the selected ChatGPT tab and should not be used concurrently with that tab's DevTools. Review the permissions before installing. Firefox does not request this permission.
+- **Chrome loop recovery temporarily changes the page DOM.** Only a previously captured, verified scrollable code widget is detached (up to three per run), then restored where possible. This can interfere with ChatGPT's React rendering; reload the chat if its display becomes inconsistent. Firefox only offers manual capture.
+- **Chrome automatic pauses when the conversation tab is inactive.** Return to resume. Closing, reloading or browser-discarding the tab loses the in-memory run. Firefox manual capture requires you to navigate the chat yourself.
 - **Attachments are best effort.** ZIP mode has caps of **200 assets**, **24 MiB per asset**, **160 MiB total**, **3 concurrent downloads** and an approximately **32-second per-file timeout**. Large archives still require browser memory; ZIP64 is not supported.
 - Audio/video, interactive apps, canvas-based media, unrendered chat branches and unsupported asset types are not archived.
 - In Firefox versions older than 149 or when browser focus changes, automatic popup restoration may be unavailable; the user can reopen the extension manually.
@@ -173,6 +179,7 @@ src/archive.js        Asset discovery, ZIP writer and local references
 src/i18n.js           English / Portuguese runtime strings
 background/assets.js Bounded asset download relay for approved hosts
 background/permission_popup.js One-shot, session-only popup restoration after consent
+background/native_wheel.js Chrome-only browser-debugger wheel transport
 background/worker.js Chrome MV3 entrypoint; Firefox loads individual scripts
 scripts/build.py      Cross-browser package builder
 tests/                Synthetic fixtures, unit tests and browser regressions
@@ -180,13 +187,15 @@ tests/                Synthetic fixtures, unit tests and browser regressions
 
 ## Project documentation
 
+- [Documentation index](docs/README.md) - current release materials, visuals, and historical experiment records
 - [Developer guide](docs/DEVELOPMENT.md) - setup, tests, file layout and debugging
 - [Architecture](docs/ARCHITECTURE.md) - scanner, media relay, resource limits and data flow
 - [Troubleshooting](docs/TROUBLESHOOTING.md) - installation, missing messages and inaccessible files
 - [Contributing](CONTRIBUTING.md) - contribution rules and test expectations
 - [Changelog](CHANGELOG.md) - version history
 - [Publishing](docs/PUBLISHING.md) - GitHub release and browser-store preparation
-- [Release evidence](docs/TEST_RESULTS_v0.2.4.md) - automated regression results and manual Chrome/Firefox acceptance
+- [v0.2.4.16 release notes](docs/RELEASE_NOTES_v0.2.4.16.md) - current features, browser differences and upgrade guidance
+- [Release evidence](docs/TEST_RESULTS_v0.2.4.16.md) - new popup/package test results and live-test limitations; [v0.2.4 evidence](docs/TEST_RESULTS_v0.2.4.md) remains historical
 
 ## Contributing and license
 

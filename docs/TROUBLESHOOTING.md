@@ -1,6 +1,6 @@
 # Troubleshooting
 
-This page covers common issues in the v0.2.4 preview. Check your browser's developer console for additional diagnostics, but remove private conversation text and signed URLs before sharing logs.
+This page covers common issues in ThreadToMD v0.2.4.16. Check your browser's developer console for additional diagnostics, but remove private conversation text and signed URLs before sharing logs.
 
 ## The extension is disabled or says to open a conversation
 
@@ -16,11 +16,23 @@ Firefox's **Load Temporary Add-on** is a development feature. Reload `manifest.j
 
 ## The popup says it could not start
 
-Update to the latest matched Chrome/Firefox package and reload the extension. In the v0.2.4 source, `popup/popup.js` injects root-relative files, including `/src/exporter.js`. In Firefox, a stale package with a relative path can otherwise look for `popup/src/exporter.js`.
+Update to the latest matched Chrome/Firefox package and reload the extension. The popup injects root-relative bundled scripts, including `/src/exporter.js`. In Firefox, a stale package with a relative path can otherwise look for `popup/src/exporter.js`.
 
-## The export appears paused
+## The Chrome automatic export appears paused
 
-That is expected when the tab is hidden or its browser window loses focus. **Return to the conversation**; the scan resumes automatically. Keep the tab open. Reloading or closing it discards the in-memory capture.
+Chrome automatic capture deliberately pauses when the chat tab is hidden or the browser window loses focus. **Return to that conversation** to resume. Keep the tab open; reloading or closing it discards the in-memory capture. Manual mode (the only Firefox mode) requires you to navigate the history yourself and click Finish.
+
+## The Chrome debugger permission or browser banner appears
+
+This is expected **only for Chrome automatic**, which uses Chrome's sensitive `debugger` permission to deliver native wheel events to the selected tab. The extension attempts to detach after finishing/stopping or when the page navigates. It does not request debugger access in Firefox. Do not inspect the same chat tab with DevTools during an automatic capture; use the manual option if you do not want to grant this capability.
+
+## Native automatic export loops or the ChatGPT layout shifts
+
+ThreadToMD detects repeated viewport cycles and may temporarily detach a code widget **only after its entire owner message has already been captured**. The operation is bounded and restoration is best effort. The site controls its React DOM, so the chat may visually remount or change after a recovery. If scrolling is still blocked, use the assisted fallback and explicitly review the partial/unverified export. Reload the chat after exporting if the UI looks inconsistent; never claim a successful scan was independently verified.
+
+## Firefox: where is the automatic method?
+
+Firefox intentionally offers **manual capture only**. Open the chat, click **Start assisted capture**, scroll to the earliest message, then back to the latest, and click Finish. The Chrome native wheel mechanism and its `debugger` permission are not bundled in Firefox.
 
 ## The Markdown is missing older or newer messages
 
@@ -48,8 +60,8 @@ A `sandbox:` or time-limited external link may only be valid in its original env
 
 ## The ZIP uses a lot of memory or has missing large files
 
-v0.2.4 limits assets to 200 items, 24 MiB per file and 160 MiB total. ZIP creation uses uncompressed STORE entries and does not support ZIP64. For very large chats or media, try Markdown-only mode and keep the archive private.
+v0.2.4.16 limits assets to 200 items, 24 MiB per file and 160 MiB total. ZIP creation uses uncompressed STORE entries and does not support ZIP64. For very large chats or media, try Markdown-only mode and keep the archive private.
 
 ## How can I report a bug safely?
 
-Use the GitHub bug report template after the repository is public. Include the browser/version, ThreadToMD version, short sanitized steps, whether the scan was marked partial, and the expected/actual behavior. **Never attach full exports or unredacted logs.**
+Use the [GitHub bug report template](https://github.com/mw-ferretti/thread-to-md/issues/new/choose). Include the browser/version, ThreadToMD version, short sanitized steps, whether the scan was marked partial, and the expected/actual behavior. **Never attach full exports or unredacted logs.**

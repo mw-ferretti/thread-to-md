@@ -1,6 +1,6 @@
-# ThreadToMD v0.2.4 — Initial public release
+# ThreadToMD v0.2.4 — Restore the popup after permission consent
 
-**Initial public release** — manually accepted on Google Chrome 158.0.8127.36 and Mozilla Firefox 160.0.
+**Experimental GitHub pre-release** — manually verify native permission UI on Firefox and Chrome before promoting the release.
 
 ## User-visible change
 
@@ -18,6 +18,6 @@ The Chrome MV3 entrypoint now loads two background modules: `assets.js` (unchang
 
 ## Limitations
 
-The action popup API can reject when the window loses focus or its toolbar UI is busy. The extension retries briefly without forcing focus or creating a new tab. Native approval, denial and popup-restoration flows were manually accepted in Google Chrome 158.0.8127.36 and Mozilla Firefox 160.0. Browser UI behavior may still vary across future versions, so the fallback remains to reopen the extension manually.
+The action popup API can reject when the window loses focus or its toolbar UI is busy. The extension retries briefly without forcing focus or creating a new tab. Native user approval/denial in real browsers still needs manual acceptance testing; synthetic tests are not proof that every browser UI arrangement works.
 
 See [test evidence](TEST_RESULTS_v0.2.4.md) and [release checklist](RELEASE_CHECKLIST.md).

@@ -27,8 +27,8 @@ Output:
 dist/
 ├── chrome/
 ├── firefox/
-├── threadtomd-chrome-0.2.4.zip
-└── threadtomd-firefox-0.2.4.zip
+├── threadtomd-chrome-0.2.4.16.zip
+└── threadtomd-firefox-0.2.4.16.zip
 ```
 
 The archives contain `manifest.json` at their root. Use the matching archive/folder for your browser; do not upload the source-repository ZIP to a browser store. The builder writes a Firefox-specific Gecko ID and data-collection declaration. See [Publishing](PUBLISHING.md) before any store submission.
@@ -41,7 +41,7 @@ The archives contain `manifest.json` at their root. Use the matching archive/fol
 npm test
 ```
 
-**Synthetic browser tests (the same set as GitHub Actions):**
+**Synthetic browser tests (check which ones your CI config actually invokes):**
 
 ```bash
 python3 tests/e2e.py
@@ -52,17 +52,19 @@ python3 tests/slow-older-fast.py
 python3 tests/timeout_partial.py
 python3 tests/ascii.py
 python3 tests/package_integrity.py
+python3 tests/popup_browser.py
 ```
 
 A separate `tests/slow-older.py` exercises full-duration delayed loading and can be much slower. Its outcome was inconclusive in the v0.2.2 container environment; do not infer a failure or a pass from the faster fixture alone.
 
-To update popup screenshots (using synthetic tab data):
+To regenerate **all current UI screenshots and brand artwork**, using a synthetic browser tab and the actual v0.2.4.16 popup HTML/CSS:
 
 ```bash
 python3 scripts/update_popup_screenshots.py
+python3 scripts/update_brand_assets.py
 ```
 
-The screenshot generator currently uses `/usr/bin/chromium`; if your OS has Chromium elsewhere, run it in an environment that provides that path, or adjust the script locally. Never replace repository screenshots with real private conversation content.
+The popup renderer checks that the export button is visible and that the entire popup fits under 600 CSS pixels in Chrome English/Portuguese and Firefox manual-only modes. Playwright uses `/usr/bin/chromium` when available and otherwise its installed browser. The branding generator needs Pillow (`python3 -m pip install Pillow`) and renders the real synthetic popup screenshot into the GitHub banner; it does not fabricate real user conversations. Never replace documentation images with private chats.
 
 ## Project structure
 
@@ -76,26 +78,30 @@ The screenshot generator currently uses `/usr/bin/chromium`; if your OS has Chro
 | `background/assets.js` | Privileged download relay for permitted file hosts |
 | `background/permission_popup.js` | Consent-grant listener and popup restoration |
 | `background/worker.js` | Chromium MV3 background entrypoint |
+| `background/native_wheel.js` | Chrome-only debugger input transport; omitted from the Firefox distribution |
 | `tests/fixtures/` | Synthetic classic and Chat/Work conversation layouts |
 | `scripts/build.py` | Create Chrome and Firefox distributions from shared source |
+| `scripts/update_popup_screenshots.py` | Reproducible synthetic Chrome/Firefox popup and progress screenshots |
+| `scripts/update_brand_assets.py` | GitHub banner/promo visual assets using current popup screenshots |
 
 For the data flow and resource limits, see [Architecture](ARCHITECTURE.md).
 
 ## Manual browser checks
 
-1. Load an unpacked development build in Chrome or a temporary Firefox add-on.
-2. Open a known conversation in your own account.
-3. Export Markdown and validate its first and last messages and several middle messages.
-4. Test code fences, ASCII diagrams and tables.
-5. Test ZIP mode with a media-containing conversation; inspect local relative paths and `manifest.json`.
-6. Change to another app while a long export is running. Confirm it pauses, then resumes on return.
-7. Verify no sensitive content appears in console logs, screenshots or test artifacts you plan to share.
+1. Load `dist/chrome/` unpacked in Chrome or `dist/firefox/manifest.json` temporarily in Firefox. Test the new popup and first button visibility.
+2. **Chrome automatic:** open a known long chat and export Markdown. Verify first/last messages, middle samples, and preserved code widgets after a loop recovery. Chrome will show its native debugger banner; **do not open DevTools on the attached chat tab while the capture runs**.
+3. **Firefox manual:** scroll from the newest message to the oldest and back, then click Finish in the on-page panel. Confirm the output is marked manual/unverified. Chrome assisted mode may be tested separately.
+4. Inspect fenced code, ASCII diagrams, tables and links in Markdown.
+5. Test ZIP mode with media; inspect relative asset paths and `manifest.json` after extracting it. Confirm the permission prompt occurs on ZIP selection, not on Export.
+6. For automatic capture, switch away briefly and return. Verify controlled pause/resume without losing the accumulated message count.
+7. Verify that a recovered code widget is restored where possible, that ordinary traversal removes none, and that aborted scans do not claim proven completeness.
+8. Never share private chat content, signed URLs or tokens in bug reports, screenshots or test artifacts.
 
 Synthetic tests exercise selected DOM behaviors but cannot independently prove that every live conversation is complete.
 
 ## Debugging an extension
 
-- **Chrome:** `chrome://extensions/` > ThreadToMD > **Errors**, or inspect the popup and target tab DevTools consoles.
+- **Chrome:** `chrome://extensions/` > ThreadToMD > **Errors**, or inspect the popup. For the native automatic path, avoid attaching DevTools to the **same ChatGPT tab** while the extension is using Chrome's debugger interface.
 - **Firefox:** `about:debugging#/runtime/this-firefox` > ThreadToMD > **Inspect**.
 - The popup closes after successful injection; the progress panel is rendered in the conversation tab, not inside the popup. On first-time ZIP consent, the background may reopen a dismissed popup after permissions are granted.
 - Report **sanitized** messages and steps. Never publish copied text from a private chat, signed download links, cookies or tokens.

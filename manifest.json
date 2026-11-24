@@ -2,12 +2,13 @@
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "short_name": "ThreadToMD",
-  "version": "0.2.4",
+  "version": "0.2.4.16",
   "description": "__MSG_extensionDescription__",
   "permissions": [
     "activeTab",
     "scripting",
-    "storage"
+    "storage",
+    "debugger"
   ],
   "action": {
     "default_title": "__MSG_actionTitle__",

@@ -1,5 +1,5 @@
 /*
- * ThreadToMD archive engine v0.2.4.
+ * ThreadToMD archive engine v0.2.4.5 (assisted experiment).
  * Local-only; no service worker, external libraries, remote code, or telemetry.
  * Deliberately bounded (no ZIP64 / files over 24 MiB). ZIP entries use STORE:
  * images and office documents are usually pre-compressed; fewer copies matter.
@@ -380,7 +380,7 @@
     }
     manifest(info) {
       return {
-        schemaVersion: 1, generator: 'ThreadToMD', version: '0.2.4',
+        schemaVersion: 1, generator: 'ThreadToMD', version: '0.2.4.16',
         exportedAt: new Date().toISOString(), conversation: info,
         limits: { maxAssets: LIMITS.entries, maxAssetBytes: LIMITS.perFile, maxArchiveAssetsBytes: LIMITS.total },
         summary: this.summary(),

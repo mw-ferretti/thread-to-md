@@ -11,8 +11,9 @@ const popup = read('popup/popup.js');
 const archive = read('src/archive.js');
 test('Manifest V3 with least-privilege permissions', () => {
   assert.equal(manifest.manifest_version,3);
-  assert.deepEqual(manifest.permissions,['activeTab','scripting','storage']);
+  assert.deepEqual(manifest.permissions,['activeTab','scripting','storage','debugger']);
   assert.equal(manifest.host_permissions,undefined);
+  assert.match(read('background/native_wheel.js'), /Input\.dispatchMouseEvent/);
   assert.equal(manifest.content_scripts,undefined);
   assert.equal(manifest.default_locale, 'en');
 });

@@ -56,6 +56,12 @@ with sync_playwright() as playwright:
         page.add_script_tag(content=I18N)
         page.add_script_tag(content=POPUP)
         page.locator('#start').wait_for(state='visible')
+        assert page.locator('input[value=automatic]').count() == 0
+        assert page.locator('input[value=native]').count() == 1
+        assert page.locator('input[value=assisted]').count() == 1
+        assert page.evaluate('document.querySelector("input[value=assisted]").checked' if is_firefox else 'document.querySelector("input[value=native]").checked')
+        if is_firefox:
+            assert page.locator('.capture-picker').is_hidden()
         page.wait_for_function('!document.querySelector("#start").disabled')
         page.get_by_text('Complete archive (.zip)').click()
         page.wait_for_function('window.__testState.requests.length === 1')
@@ -74,7 +80,7 @@ with sync_playwright() as playwright:
             page.locator('#start').click()
             page.wait_for_function('window.__testState.injections.length === 2')
             assert page.evaluate('window.__testState.requests.length') == 1
-            assert page.evaluate('window.__testState.injections[0].args[0]') == 'archive'
+            assert page.evaluate('window.__testState.injections[0].args') == ['archive', 'native']
             assert page.evaluate('window.__testState.closes') == 1
             print('PASS Chrome-mode DOM: ZIP label click requests permission before Export', flush=True)
         page.close()

@@ -1,69 +1,78 @@
-# Publishing ThreadToMD
+# Publish ThreadToMD v0.2.4.16
 
-This guide separates three independent milestones: **public GitHub source**, **GitHub release assets**, and **browser store approval**. ThreadToMD v0.2.4 has completed manual release acceptance on Google Chrome 158.0.8127.36 and Mozilla Firefox 160.0 and is ready for a normal GitHub Release. Do not describe the build as store-approved or guarantee complete exports; browser-store review remains a separate milestone and message completeness is heuristic.
+**Repository:** https://github.com/mw-ferretti/thread-to-md  
+**Existing public version:** v0.2.4  
+**Next tag:** `v0.2.4.16`
 
-## 1. Publish the GitHub source
+This is an **update to the existing repository**, not a new project. The v0.2.4 release and its original notes remain historical records. GitHub publication is distinct from browser-store approval.
 
-1. Create a **public** GitHub repository named `ThreadToMD`. Do not initialize it with another README, license or .gitignore; these already exist here.
-2. Extract the **GitHub source ZIP** and work from the inner `threadtomd/` folder. The repository root must contain `README.md`, `manifest.json`, `src/`, `popup/`, `.github/` and `docs/`.
-3. Confirm the source contains **no exported conversations or private files**. `dist/` is generated and excluded by `.gitignore`.
-4. From the project root, create the initial Git history and push. Replace `YOUR_GITHUB_USER` with your actual account name:
+## 1. Update the existing repository
 
-   ```bash
-   git init -b main
-   git add .
-   git commit -m "Initial public release v0.2.4"
-   git remote add origin https://github.com/YOUR_GITHUB_USER/ThreadToMD.git
-   git push -u origin main
-   ```
+1. Work in your checkout of `https://github.com/mw-ferretti/thread-to-md` on `main`. Back up any local work and start from a clean branch or commit.
+2. Copy the **contents** of the new source package's `threadtomd/` folder into the repository root, preserving the `.github/`, `docs/`, `scripts/`, and `_locales/` directories. Do not commit the package itself or `dist/`.
+3. Verify that the new popup, screenshot assets, `README.md`, `CHANGELOG.md`, policies, documentation and test files are all included.
+4. Run the checks below from the repository root and review `git diff --check`, `git status`, and the diff. Do not commit conversation exports or signed asset URLs.
 
-5. Confirm that the README's preview image and screenshots display correctly on GitHub and that CI starts.
-6. Recommended repository description: **"Export ChatGPT conversations to Markdown or portable ZIP archives with virtualized-history capture."**
-7. Recommended topics: `browser-extension`, `webextensions`, `markdown`, `chatgpt`, `chrome-extension`, `firefox-extension`, `javascript`, `open-source`.
-8. In **Settings**, enable Issues and private vulnerability reporting (when available). Set the repository social preview to `docs/brand/social-preview.png`.
+```bash
+python3 scripts/build.py
+npm test
+python3 tests/popup_browser.py
+python3 tests/package_integrity.py
+python3 tests/locales.py
+python3 tests/ascii.py
+# Optional: rerender documentation visuals to confirm reproducibility
+python3 scripts/update_popup_screenshots.py
+python3 scripts/update_brand_assets.py
+```
 
-The static badges in the README identify the tested v0.2.4 release and MIT license; there are no fabricated store links, star counts or CI-success claims.
+5. Perform a short **live Chrome and Firefox installation smoke test** of the v0.2.4.16 packages. Confirm the new popup, correct browser method, download behavior, and Chrome automatic completion. The v0.2.4.15 engine succeeded in a real Chrome conversation, but that is not a fresh test of this exact packaged version.
+6. Review the changes locally. Example commands for an existing checkout:
 
-## 2. Create a GitHub Release
+```bash
+git status
+git diff --check
+git add -A
+git commit -m "release: prepare ThreadToMD v0.2.4.16"
+git push origin main
+```
 
-1. From a clean checkout, run `python3 scripts/build.py`, `npm test` and the relevant browser tests.
-2. Verify that `dist/threadtomd-chrome-0.2.4.zip` and `dist/threadtomd-firefox-0.2.4.zip` each place `manifest.json` **at the archive root**.
-3. Create a normal GitHub Release tagged **`v0.2.4`**. Manual browser acceptance for this build is already recorded in `TEST_RESULTS_v0.2.4.md`.
-4. Attach both browser-specific ZIPs. Use [Release notes](RELEASE_NOTES_v0.2.4.md) as the release body and link to the README's installation steps.
-5. Explain that the user must **extract** the ZIP before loading it in developer mode. Note that a Firefox temporary extension is removed after restarting.
+Do **not** run `git init` or `git remote add` inside an already existing repository. Do not overwrite any unrelated local modifications without reviewing them.
 
-**Do not upload the full source ZIP as the browser extension package.** It has a different root layout.
+## 2. Create the GitHub release
 
-## 3. Chrome Web Store (later)
+1. Confirm all version metadata and popup footer read `0.2.4.16`.
+2. Generate the **browser distribution ZIPs** with `python3 scripts/build.py`. Their exact names are:
 
-Before submission:
+   - `dist/threadtomd-chrome-0.2.4.16.zip`
+   - `dist/threadtomd-firefox-0.2.4.16.zip`
 
-- Complete developer account verification in the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole).
-- Upload only the archive built for Chrome.
-- Use truthful copy from [Store listing draft](STORE_LISTING.md), updated to match the tested package.
-- Prepare the bundled 128 x 128 extension icon, **at least one real in-browser screenshot** (1280 x 800 or 640 x 400) and the required **440 x 280 promotional tile**. Original draft artwork is available under `docs/brand/`.
-- Publish the privacy policy at a stable public URL, e.g. the GitHub `PRIVACY.md`, and complete the data-use/permission disclosures consistently.
-- Capture **actual installed-browser behavior**, with synthetic or appropriately redacted conversations; the included fixture preview is not evidence of a live store-tested export.
-- Review the current [image requirements](https://developer.chrome.com/docs/webstore/images) and [listing policies](https://developer.chrome.com/docs/webstore/program-policies/listing-requirements) at submission time.
+3. Confirm that each ZIP contains `manifest.json` at the **root**, not inside an extra folder. The Chrome package includes `debugger` and `background/native_wheel.js`; the Firefox package includes neither.
+4. Create/push tag `v0.2.4.16` from the tested commit, then create a GitHub Release at `https://github.com/mw-ferretti/thread-to-md/releases/new`:
 
-Update the README with an official Chrome Web Store link **only after approval**.
+```bash
+git tag v0.2.4.16
+git push origin v0.2.4.16
+```
 
-## 4. Mozilla Add-ons (later)
+5. Use [Release notes v0.2.4.16](RELEASE_NOTES_v0.2.4.16.md) for the release body, **attach both ZIPs** and publish. If the exact build's live smoke tests are still pending, mark it **Pre-release** and disclose the limitation; release status can be revised after acceptance.
+6. Once the release assets are uploaded, verify the README's two direct-download links, release badge, screenshots and repository social preview. The new links cannot work before the release is published with both assets.
+7. Upload `docs/brand/social-preview.png` in **repository Settings > General > Social preview** if you want GitHub link cards to use the new art; merely committing the image does not change the existing repository-level social-preview setting automatically.
 
-1. Select a **stable and unique Firefox extension ID**, replacing `threadtomd@extensions.local` in `scripts/build.py` before the first submission. The existing ID is only a development placeholder.
-2. Rebuild, inspect `dist/firefox/manifest.json`, and verify the Gecko-specific settings including `data_collection_permissions.required = ["none"]` match the actual behavior.
-3. Submit the Firefox package through the [Mozilla Add-on Developer Hub](https://addons.mozilla.org/developers/), with truthful listing copy, privacy policy, relevant screenshots and source/build documentation if requested.
-4. Wait for successful review/signing. Temporary development installation is not an approved Firefox release.
-5. Recheck Mozilla's [submission guidance](https://extensionworkshop.com/documentation/publish/submitting-an-add-on/) and [data collection guidance](https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/) at the time of submission.
+**Do not attach the source ZIP as a browser extension install package.** Source belongs in the repository; GitHub's built-in source archives are automatic.
 
-## 5. Evidence required before store release
+## 3. Browser store publication is a separate decision
 
-The current v0.2.4 package has completed manual acceptance on **Google Chrome 158.0.8127.36** and **Mozilla Firefox 160.0**. Before submitting a later build to either browser store, repeat the release checklist against the exact package being submitted: initial/final message boundaries on a long conversation, chronological ordering, preserved code/ASCII, local archive links, inline and uploaded media, an accessible PDF or ZIP, failed/expired files recorded in `manifest.json`, permission consent/recovery, and pause/resume behavior. Follow [Release checklist](RELEASE_CHECKLIST.md).
+Chrome's automatic mode uses the high-privilege **`debugger`** permission to send trusted wheel input to the selected ChatGPT tab. Before Chrome Web Store submission, document and review the least-privilege justification, user disclosure, detachment behavior, any store policy restrictions and screenshots from an actual installed build. The presence of a GitHub release does not mean the permission has been approved by Google.
 
-## 6. Portfolio presentation
+Firefox is **manual-only** and the Firefox build excludes `debugger`. Replace the development Gecko ID `threadtomd@extensions.local` with the intended stable add-on ID before an initial official Mozilla submission, then rebuild and revalidate its permissions and data-use declaration. Firefox `about:debugging` installation remains temporary and unsigned.
 
-Use **ThreadToMD** as both the project title and repository name. The portfolio-friendly angle is **incremental capture over a virtualized DOM, conservative completeness reporting, cross-browser extension packaging and bounded binary archive transport**. Describe these as implementation choices, not as claims that the extension captures every private ChatGPT asset.
+Review current store asset dimensions and policies before submission. Use [Store listing](STORE_LISTING.md), [Privacy](../PRIVACY.md), [Security](../SECURITY.md), and the [Release checklist](RELEASE_CHECKLIST.md). The repository's fixture screenshots are for GitHub documentation, **not evidence of real installed-browser behavior**. Create non-sensitive screenshots from actual installed extension sessions for store review.
 
-Suggested one-line description:
+Do not add store links to the README until those listings are approved and exist.
 
-> Open-source Chrome and Firefox extension that exports long ChatGPT conversations to developer-friendly Markdown and portable archives, with virtualized-DOM capture and optional accessible attachments.
+## 4. Portfolio presentation
+
+- Repository: **`mw-ferretti/thread-to-md`**, product name **ThreadToMD**.
+- One shared source tree; distinct Chrome/Firefox ZIPs.
+- Demonstrated engineering: incremental capture under DOM virtualisation, Chrome trusted-wheel navigation with bounded recovery, manual Firefox flow, conservative partial-status reporting, and optional ZIP archiving with bounded downloads.
+- Describe browser capabilities separately; do not promise verified 100% capture of all possible conversations or media.

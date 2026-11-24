@@ -18,10 +18,14 @@
     'https://chat.openai.com/*'
   ];
   const FORMAT_KEY = 'threadtomd.exportFormat';
+  const METHOD_KEY = 'threadtomd.captureMethod';
   const start = document.getElementById('start');
   const status = document.getElementById('status');
   const markdown = document.querySelector('input[name="exportFormat"][value="markdown"]');
   const archive = document.querySelector('input[name="exportFormat"][value="archive"]');
+  const assisted = document.querySelector('input[name="captureMethod"][value="assisted"]');
+  const native = document.querySelector('input[name="captureMethod"][value="native"]');
+  const nativeWarning = document.getElementById('native-warning');
   // Firefox normally dismisses the toolbar panel to show its native prompt.
   const firefoxPopup = typeof chrome.runtime?.getBrowserInfo === 'function';
   // The background uses the port to detect whether this popup is still open.
@@ -44,12 +48,16 @@
     } catch { return false; }
   };
   const currentMode = () => archive.checked ? 'archive' : 'markdown';
+  // Firefox has no native wheel API. Never start the removed classic engine.
+  const currentMethod = () => firefoxPopup ? 'assisted' : (assisted.checked ? 'assisted' : 'native');
   const message = (value, kind = '') => {
     status.textContent = value;
     status.className = `status ${kind}`.trim();
   };
   const syncButton = () => {
+    nativeWarning.hidden = currentMethod() !== 'native';
     start.disabled = !tabReady || exporting || permissionPending;
+    start.textContent = t(currentMethod() === 'assisted' ? 'popupCaptureStart' : 'popupExport');
   };
   const showReady = () => {
     if (!tabReady || exporting || permissionPending) return;
@@ -70,6 +78,22 @@
       markdown.checked = false;
     }
   } catch { /* Storage may be unavailable; the default is Markdown. */ }
+  // Only supported choices are native Chrome and manual capture. Previously
+  // saved "legacy" and "automatic" selections migrate to the supported
+  // browser-specific default; explicit manual preferences remain sticky.
+  let preference = null;
+  try { preference = globalThis.localStorage?.getItem(METHOD_KEY); }
+  catch { /* Use browser-specific default without localStorage. */ }
+  const selectedMethod = firefoxPopup || preference === 'assisted' ? 'assisted' : 'native';
+  assisted.checked = selectedMethod === 'assisted';
+  native.checked = selectedMethod === 'native';
+  if (firefoxPopup) {
+    // The Firefox build neither has nor offers privileged native scrolling.
+    document.getElementById('native-choice').hidden = true;
+    // Only one method remains: avoid an unnecessary choice fieldset.
+    const picker = document.querySelector('.capture-picker');
+    if (picker) picker.hidden = true;
+  }
   const rememberFormat = (format) => {
     try { globalThis.localStorage?.setItem(FORMAT_KEY, format); }
     catch { /* Keep working without saving the preference. */ }
@@ -161,6 +185,14 @@
 
   // The label forwards a real pointer click to the radio input. Keyboard
   // activation also generates a click. Both count as a browser user gesture.
+  assisted.addEventListener('click', () => {
+    try { globalThis.localStorage?.setItem(METHOD_KEY, 'assisted'); } catch { /* optional */ }
+    syncButton();
+  });
+  native.addEventListener('click', () => {
+    try { globalThis.localStorage?.setItem(METHOD_KEY, 'native'); } catch { /* optional */ }
+    syncButton();
+  });
   archive.addEventListener('click', selectArchive);
   markdown.addEventListener('click', () => {
     rememberFormat('markdown');
@@ -174,11 +206,15 @@
     message(t('popupStarting'));
     try {
       const mode = currentMode();
+      const method = currentMethod();
       // Starting a scan must not trigger permissions or await permission UI.
       await chrome.scripting.executeScript({
         target: { tabId: currentTab.id },
-        func: (format) => { globalThis.__threadtomdExportMode = format; },
-        args: [mode]
+        func: (format, captureMethod) => {
+          globalThis.__threadtomdExportMode = format;
+          globalThis.__threadtomdCaptureMode = captureMethod;
+        },
+        args: [mode, method]
       });
       await chrome.scripting.executeScript({
         target: { tabId: currentTab.id },

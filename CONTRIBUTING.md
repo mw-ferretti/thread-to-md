@@ -23,6 +23,7 @@ Thanks for helping keep ChatGPT conversation exports readable, local-first and a
    python3 tests/background_pause.py
    python3 tests/archive_e2e.py
    python3 tests/package_integrity.py
+   python3 tests/popup_browser.py
    ```
 
 6. Open a pull request explaining the problem, approach, tests run and remaining limitations.
@@ -31,14 +32,14 @@ A full test matrix is documented in [Developer guide](docs/DEVELOPMENT.md). The 
 
 ## Engineering principles
 
-- Minimize permissions and keep export initiated by explicit user action.
-- Preserve **both** Chrome and Firefox behavior from a single shared source.
+- Minimize permissions and keep export initiated by explicit user action. Chrome's sensitive `debugger` scope must stay restricted to the chosen ChatGPT tab; do not add it to Firefox.
+- Preserve **both** browser distributions from shared source, while respecting Chrome's native-automatic/assisted modes and Firefox's manual-only mode.
 - Do not add persistent conversation storage, telemetry, scraping of unrelated pages, external AI services or undocumented account APIs.
 - Treat missing messages and attachments as visible failure states rather than silently claiming complete recovery.
 - Maintain resource caps and fail closed for unsupported media/hosts.
 - Keep Markdown, code fences, ASCII diagrams and relative asset links readable in GitHub/VS Code.
 - Keep English as the default UI; `pt` and `pt-BR` use Brazilian Portuguese. Do not translate conversation contents.
-- If updating UI text, update both runtime dictionaries and their tests.
+- If updating UI text, update both runtime dictionaries, related popup tests, and real-HTML fixture screenshots. Regenerate the brand assets from the new popup screenshot.
 
 ## Review expectations
 

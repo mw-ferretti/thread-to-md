@@ -6,7 +6,7 @@ import json, shutil, zipfile
 ROOT=Path(__file__).resolve().parents[1]
 DIST=ROOT/'dist'
 base=json.loads((ROOT/'manifest.json').read_text(encoding='utf-8'))
-files=['background/assets.js','background/worker.js','background/permission_popup.js','popup/popup.html','popup/popup.css','popup/popup.js','src/i18n.js','src/archive.js','src/exporter.js'] + [f'_locales/{locale}/messages.json' for locale in ('en', 'pt_BR')] + [f'icons/{size}.png' for size in (16,32,48,128)]
+files=['background/assets.js','background/worker.js','background/permission_popup.js','background/native_wheel.js','popup/popup.html','popup/popup.css','popup/popup.js','src/i18n.js','src/archive.js','src/exporter.js'] + [f'_locales/{locale}/messages.json' for locale in ('en', 'pt_BR')] + [f'icons/{size}.png' for size in (16,32,48,128)]
 if DIST.exists(): shutil.rmtree(DIST)
 DIST.mkdir()
 for target in ('chrome','firefox'):
@@ -16,6 +16,11 @@ for target in ('chrome','firefox'):
         shutil.copy2(ROOT/file,destination)
     manifest=dict(base)
     if target=='firefox':
+        # The native mode requires Chrome's privileged CDP debugger. Firefox
+        # keeps assisted manual capture but neither asks for debugger nor
+        # bundles the Chrome-only transport.
+        manifest['permissions']=[p for p in manifest['permissions'] if p != 'debugger']
+        (folder/'background/native_wheel.js').unlink()
         manifest['browser_specific_settings']={'gecko':{
             # Before AMO publication, replace with an ID you intend to keep forever.
             'id':'threadtomd@extensions.local',

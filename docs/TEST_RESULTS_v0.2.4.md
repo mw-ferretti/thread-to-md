@@ -1,6 +1,6 @@
 # Test results — ThreadToMD v0.2.4
 
-**2026-11-19 · Release acceptance complete.** The v0.2.4 package was manually validated in Google Chrome 158.0.8127.36 and Mozilla Firefox 160.0, including the native permission flow and popup-restoration behavior.
+**2026-11-19 · Pre-release.** Native browser permission doorhangers have **not** been validated manually in Chrome and Firefox after this change. Background popup restoration is supported by the Firefox 149+ API but should be verified with a fresh consent prompt.
 
 ## Scope
 
@@ -20,7 +20,7 @@ New code: `background/permission_popup.js`, a small `background/worker.js` for C
 | Fenced ASCII diagrams | **PASS** |
 | Locale test: Brazilian Portuguese and Portuguese (Portugal) fallback to English | **PASS** for these two locales |
 | Locale suite in full, blur/resume combined suite, accelerated delayed-loader test | **INCONCLUSIVE** — test execution limits; do not claim full-suite pass |
-| Native permission approval and popup behavior in installed browsers | **PASS — manual acceptance** on Chrome 158.0.8127.36 and Firefox 160.0 |
+| Native permission approval and automatic popup reopening in installed Firefox/Chrome | **NOT TESTED**, needs manual acceptance |
 | Chromium persistent-context extension-load smoke test | **NOT VERIFIED**: local headless Chromium did not expose a service worker within the test window |
 
 ## Specific behavioral coverage
@@ -32,11 +32,6 @@ New code: `background/permission_popup.js`, a small `background/worker.js` for C
 - Denial, unrelated permissions, duplicate grant events, stale intents and tab focus changes cannot initiate a new export or a spurious popup.
 - Markdown-only export remains free of optional host access prompts. ZIP mode still requires an explicit Export click even after authorization.
 
-## Manual release acceptance
+## Manual release acceptance still needed
 
-Manual acceptance was completed against the packaged v0.2.4 builds in:
-
-- **Google Chrome 158.0.8127.36**
-- **Mozilla Firefox 160.0**
-
-The tested release flow covered the browser-native first-use permission UI, ZIP selection, explicit export start, popup behavior/restoration, refusal/recovery behavior, long-conversation export, portable archive handling and pause/resume behavior. The release remains intentionally conservative about message completeness because ChatGPT does not expose an authoritative rendered-message total.
+With an otherwise clean profile **or revoked prior host access**, use the built Chrome and Firefox packages. In Firefox 149+ desktop, select ZIP and allow all optional hosts; check the native dialog is visible and the toolbar popup reopens with ZIP selected. In Chrome, check the popup stays open or is restored if dismissed. Then press Export and inspect the resulting ZIP. Repeat refusal and window-switch scenarios, and check no duplicate dialogs/popups. This test is essential before publishing to either browser's extension store.

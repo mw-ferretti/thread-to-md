@@ -1,8 +1,8 @@
-# Store listing draft - ThreadToMD
+# Store listing draft - ThreadToMD v0.2.4.16
 
-**Draft for a future store submission.** Do not publish until manual Chrome and Firefox acceptance is complete. Store links do not exist yet.
+**Draft for possible future Chrome Web Store and Mozilla Add-ons submissions.** The GitHub release is separate from store review/approval. Update this document against current store rules before submitting. The two browser distributions have deliberately different capture methods and permissions.
 
-## Product name
+## Name
 
 **ThreadToMD - ChatGPT to Markdown**
 
@@ -12,55 +12,48 @@ Export ChatGPT conversations to Markdown or portable ZIP archives with accessibl
 
 ## Full description
 
-ThreadToMD is an independent, open-source browser extension for saving the currently open ChatGPT conversation as a readable Markdown file or a portable ZIP archive.
+ThreadToMD is an independent, open-source browser extension that saves the currently opened ChatGPT conversation as readable Markdown or a ZIP with accessible images and linked files. It captures rendered messages incrementally, so long virtualized conversations can be assembled even when the website removes older messages from the DOM.
 
-It scans long conversations incrementally as the site loads and removes older message elements. The resulting Markdown preserves headings, links, lists, tables, fenced code blocks and whitespace-sensitive ASCII diagrams. An optional ZIP mode attempts to save visible images and direct document links, then rewrites successful references as local paths.
+- Preserve code blocks, tables, links, headings and whitespace-sensitive ASCII diagrams.
+- Save accessible images and direct document links with local references in a portable ZIP; failed files are reported in `manifest.json`.
+- Inspect progress and save a partial/unverified export if required.
+- Keep files local; there is no ThreadToMD-operated backend, telemetry or tracking.
 
-Key features:
-- Export the current chat in Markdown (`.md`) or ZIP (`.zip`).
-- Keep content from virtualized conversation windows as you scroll.
-- Track progress and save an explicitly partial export if needed.
-- Pause when the conversation loses browser focus and resume when you return.
-- Include an asset-status `manifest.json` for ZIP archives.
-- Run locally with no developer-operated server, analytics or tracking.
+**Chrome/Chromium:** native automatic capture is the default, with an assisted/manual alternative. Chrome's automatic capture requires the high-privilege **`debugger`** permission for browser-trusted scrolling on the selected tab. On confirmed scrolling-widget loops, a previously captured code widget may be detached temporarily and restored where possible; the ChatGPT page may need reloading if React changes its view.
 
-How to use:
-1. Open a ChatGPT conversation.
-2. Click ThreadToMD and choose Markdown or ZIP.
-3. Start the export and leave the tab open. If you switch away, return to let the scan finish.
-4. Review the beginning/end of the Markdown and any failed downloads in `manifest.json`.
+**Firefox:** manual capture only. Scroll to the beginning, return to the end, and press Finish. The Firefox package does **not** request `debugger`.
 
-**Limitations:** A rendered page does not expose an authoritative message total. Attachments may be unavailable due to expired URLs, authentication, missing direct links or file limits. Audio, video, interactive content and hidden branches are outside the current archival scope. This is not a full account backup.
+ZIP mode requests optional supported OpenAI/CDN host access when selected; denying access does not prevent Markdown export and may leave files unavailable in ZIP output.
 
-**Privacy:** Conversation data is assembled locally. ZIP mode may fetch assets from their original URLs with optional permission consent; original hosts can receive ordinary request metadata. ThreadToMD does not send conversation content to its developer.
-
-Independent project, not affiliated with or endorsed by OpenAI.
+This is **not** a complete account backup. The rendered site does not expose an authoritative message total and may hide branches or media. Users should check the first/last messages and archive manifest. ChatGPT and OpenAI are trademarks of their respective owners; this is not an official OpenAI product.
 
 ## Permissions and data use
 
-- `activeTab`: temporarily access the user-selected conversation after an explicit click.
-- `scripting`: inject the bundled exporter in that tab.
-- `storage`: remember a short-lived popup-restoration marker (tab/window IDs and timestamp only) in session memory during first-time host permission consent.
-- Optional OpenAI/CDN host access: only in ZIP mode, to fetch supported original asset URLs.
-- No analytics, telemetry, persistent conversation/asset storage, advertising, cookie API or browsing history access. A local export-format preference is saved; temporary consent state is in session memory.
+| Permission | Browser | Purpose |
+| --- | --- | --- |
+| `activeTab`, `scripting` | Chrome + Firefox | Access and run bundled exporter only after the user's toolbar action |
+| `storage` | Chrome + Firefox | Keep a short-lived tab/window/timestamp marker while restoring the popup after consent |
+| `debugger` | **Chrome only** | Native browser wheel input on the initiating ChatGPT tab while automatic capture is running |
+| Optional original-media hosts | Both, on ZIP choice | Retrieve accessible files from original approved sources with user consent |
 
-The Firefox manifest includes `data_collection_permissions.required = ["none"]`. Reconfirm the current store rules and declarations against the final built package.
+No analytics, developer-hosted server, advertising, browser-history permission, cookies API, or persistent conversation storage. The saved archive can contain private text and signed links; treat it as sensitive.
 
-## Assets and submission notes
+## Art and store assets
 
-| Asset | Current location or next action |
+| Asset | Source |
 | --- | --- |
-| Extension icon | `icons/128.png` |
-| Promotional tile | `docs/brand/chrome-store-promo-440x280.png` - original design draft, review against store requirements |
-| GitHub social preview | `docs/brand/social-preview.png` |
-| GitHub demo screenshots | `docs/screenshots/popup.png`, `docs/screenshots/progress-demo.png` - synthetic UI fixture |
-| Chrome Store screenshot | **Still needed:** real installed extension, 1280 x 800 or 640 x 400, with non-sensitive demo data |
-| Public privacy URL | Add the repository's public `PRIVACY.md` URL after GitHub publication |
-| Support URL | Add the public GitHub issue tracker after publication |
-| Store URLs | Add only after each store approves the extension |
+| Extension icon | `icons/128.png` (unchanged logo) |
+| Current GitHub banner | `docs/brand/social-preview.png`, 1280 x 640, regenerated for v0.2.4.16 |
+| Promotional art | `docs/brand/chrome-store-promo-440x280.png`, regenerated draft |
+| GitHub UI screenshots | `docs/screenshots/popup.png`, `popup-pt-BR.png`, `popup-firefox.png`, `popup-firefox-pt-BR.png` |
+| Synthetic progress preview | `docs/screenshots/progress-demo.png` |
+| Actual store screenshot | **Pending:** capture a real installed browser window with non-sensitive chat data, at the dimensions accepted by each store |
+| Public privacy URL | `https://github.com/mw-ferretti/thread-to-md/blob/main/PRIVACY.md` (after updating `main`) |
+| Support / issue tracker | `https://github.com/mw-ferretti/thread-to-md/issues` |
+| Store URLs | Add only after the submissions have been accepted |
 
-The repository's demo screenshots should **not** be presented to browser stores as proof of live-site functionality. Use current official [Chrome](https://developer.chrome.com/docs/webstore/images) and [Mozilla](https://extensionworkshop.com/documentation/publish/submitting-an-add-on/) rules when submitting.
+The popup images come from real v0.2.4.16 HTML/CSS **rendered against synthetic tab data**. They are useful for README documentation but are not evidence of a live extension install or permission acceptance. Verify current [Chrome Web Store imagery](https://developer.chrome.com/docs/webstore/images) and [Mozilla publishing requirements](https://extensionworkshop.com/documentation/publish/submitting-an-add-on/) before submission.
 
 ## Localization
 
-The UI defaults to English. Browser locales `pt` and `pt-BR` use Brazilian Portuguese; all others, including `pt-PT`, use English. Exported conversation text is never translated.
+The runtime UI uses Portuguese only for `pt`/`pt-BR`; all other locales, including `pt-PT`, default to English. The original conversation is never translated.

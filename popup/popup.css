@@ -1,27 +1,35 @@
 *{box-sizing:border-box}
 :root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color-scheme:dark;background:#101820;color:#e9f0ef}
-body{width:342px;min-height:340px;margin:0}
-main{padding:21px}
-.header{display:flex;align-items:center;gap:12px;margin-bottom:22px}
-.logo{display:grid;place-items:center;font-size:28px;font-weight:750;color:#b9fff0;background:#0c3938;width:45px;height:45px;border-radius:14px}
-h1{font-size:20px;margin:0;font-weight:720;letter-spacing:-.4px}
-p{margin:0}.subtitle{font-size:12px;color:#a4b6b3;margin-top:3px}
-.card{border:1px solid #34474e;background:#16252d;border-radius:12px;padding:16px}
-.lead{line-height:1.44;font-size:14px}.detail{line-height:1.5;font-size:12px;color:#a4b7bb;margin-top:9px;margin-bottom:17px}
-button{font:inherit;background:#8fe2ce;border:0;border-radius:9px;padding:12px;color:#092f32;font-size:13px;font-weight:720;width:100%;cursor:pointer;transition:background .15s}
+body{width:356px;min-height:0;margin:0}
+main{padding:16px}
+.header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.logo{display:grid;place-items:center;font-size:25px;font-weight:750;color:#b9fff0;background:#0c3938;width:42px;height:42px;border-radius:13px}
+h1{font-size:18px;margin:0;font-weight:720;letter-spacing:-.3px}
+p{margin:0}.subtitle{font-size:11px;color:#a4b6b3;margin-top:2px}
+.card{border:1px solid #34474e;background:#16252d;border-radius:12px;padding:12px}
+button{font:inherit;background:#8fe2ce;border:0;border-radius:9px;padding:11px 12px;color:#092f32;font-size:13px;font-weight:720;width:100%;cursor:pointer;transition:background .15s;margin-top:2px}
 button:hover:not(:disabled){background:#b1f4e3}
 button:focus-visible{outline:2px solid #fff;outline-offset:3px}
 button:disabled{opacity:.55;cursor:not-allowed}
-.status{font-size:11.5px;line-height:1.5;color:#99b3b9;margin-top:12px;min-height:17px}
+.status{font-size:10.75px;line-height:1.4;color:#99b3b9;margin-top:8px;min-height:15px}
 .status.error{color:#ffbbaa}.status.ok{color:#b1e5d7}
-.privacy{font-size:11px;color:#a9d9cb;margin-top:18px}
-.hint{font-size:11px;line-height:1.6;color:#94aab0;margin-top:9px}
-footer{display:flex;justify-content:space-between;font-size:10px;color:#738c94;border-top:1px solid #293b44;padding-top:13px;margin-top:20px}
+.afterword{margin-top:8px;padding-top:8px;border-top:1px solid #293b44}
+.lead{line-height:1.35;font-size:10.85px;font-weight:600;color:#d7e4e2}
+.hint{font-size:10.25px;line-height:1.4;color:#94aab0;margin-top:8px}
+.privacy{font-size:10px;color:#a9d9cb;margin-top:4px}
+footer{display:flex;justify-content:space-between;font-size:9.4px;color:#738c94;border-top:1px solid #293b44;padding-top:8px;margin-top:10px}
 
-.format-picker{border:0;padding:0;margin:0 0 15px;min-width:0}
-.format-picker legend{color:#b0cac5;font-weight:660;font-size:12px;margin-bottom:8px}
-.format-option{display:flex;gap:9px;align-items:flex-start;padding:8px 9px;margin-bottom:5px;border:1px solid #34474e;border-radius:8px;cursor:pointer}
+.format-picker{border:0;padding:0;margin:0 0 10px;min-width:0}
+.format-picker:last-of-type{margin-bottom:10px}
+.format-picker legend{color:#b0cac5;font-weight:660;font-size:10.75px;margin-bottom:5px}
+.capture-picker{margin-top:1px}
+.format-option{display:flex;gap:8px;align-items:flex-start;padding:6px 7px;margin-bottom:4px;border:1px solid #34474e;border-radius:8px;cursor:pointer}
 .format-option:has(input:checked){border-color:#8fe2ce;background:#183a36}
-.format-option input{accent-color:#8fe2ce;margin:3px 0 0;flex-shrink:0}
-.format-option strong{display:block;font-size:12px;font-weight:650}
-.format-option small{display:block;color:#a4b7bb;font-size:11px;line-height:1.4;margin-top:2px}
+.format-option input{accent-color:#8fe2ce;margin:2px 0 0;flex-shrink:0}
+.format-option strong{display:block;font-size:11.2px;font-weight:650;line-height:1.25}
+.format-option small{display:block;color:#a4b7bb;font-size:10px;line-height:1.25;margin-top:1px}
+
+.native-warning{color:#f2d6a0;border:1px solid #856b3e;border-radius:8px;padding:6px 7px;font-size:10px;line-height:1.35;margin-top:7px}
+
+/* Author display rules must not override the HTML hidden attribute. */
+[hidden]{display:none !important}
